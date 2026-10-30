@@ -481,12 +481,12 @@
           <div class="field">
             <label for="name">Имя *</label>
             <input id="name" name="name" type="text" autocomplete="name" required>
-            <p class="field__error" data-error-for="name" hidden></p>
+            <p class="field__error" id="error-name" data-error-for="name" hidden></p>
           </div>
           <div class="field">
             <label for="contact-field">Контакт *</label>
             <input id="contact-field" name="contact" type="text" autocomplete="on" required>
-            <p class="field__error" data-error-for="contact" hidden></p>
+            <p class="field__error" id="error-contact" data-error-for="contact" hidden></p>
           </div>
           <div class="field">
             <label for="service">Что хотите создать? *</label>
@@ -499,7 +499,7 @@
               <option value="character">AI-персонаж</option>
               <option value="other">Другое</option>
             </select>
-            <p class="field__error" data-error-for="service" hidden></p>
+            <p class="field__error" id="error-service" data-error-for="service" hidden></p>
           </div>
           <div class="field">
             <label for="idea">Коротко расскажите об идее</label>
@@ -508,7 +508,7 @@
           <div class="field field--check">
             <input id="consent" name="consent" type="checkbox" required>
             <label for="consent">Я согласен(на) на обработку персональных данных и ознакомлен(а) с политикой конфиденциальности.</label>
-            <p class="field__error" data-error-for="consent" hidden></p>
+            <p class="field__error" id="error-consent" data-error-for="consent" hidden></p>
           </div>
           <button class="btn btn--ink form__submit" type="submit">Обсудить проект</button>
         </form>

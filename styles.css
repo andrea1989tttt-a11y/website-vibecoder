@@ -45,6 +45,8 @@ button { cursor: pointer; background: none; border: 0; padding: 0; }
 h1, h2, h3, p { margin: 0; }
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.cta :focus-visible,
+.footer :focus-visible { outline-color: var(--ivory); }
 [hidden] { display: none !important; }
 
 .skip {
@@ -361,8 +363,8 @@ body.menu-open .burger span:last-child { transform: translateY(-4px) rotate(-40d
   border-radius: 0;
 }
 .field textarea { min-height: 120px; resize: vertical; }
-.field--check { grid-template-columns: 22px 1fr; align-items: start; gap: 10px; }
-.field--check input { width: 18px; height: 18px; margin-top: 3px; }
+.field--check { grid-template-columns: 24px 1fr; align-items: start; gap: 10px; }
+.field--check input { width: 24px; height: 24px; min-width: 24px; min-height: 24px; margin-top: 2px; padding: 0; }
 .field--check .field__error { grid-column: 1 / -1; }
 .field__error { color: var(--danger); font-size: 14px; }
 .form__submit { justify-self: start; }

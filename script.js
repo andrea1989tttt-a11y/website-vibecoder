@@ -40,6 +40,12 @@
     setScrollLock(menuOpen || modalOpen);
   }
 
+  function setPageInert(on) {
+    document.querySelectorAll("body > :not(header):not(#mobile-nav)").forEach((node) => {
+      if ("inert" in node) node.inert = on;
+    });
+  }
+
   function closeMenu(returnFocus) {
     document.body.classList.remove("menu-open");
     if (burger) {
@@ -51,6 +57,7 @@
       panel.setAttribute("aria-hidden", "true");
       if ("inert" in panel) panel.inert = true;
     }
+    setPageInert(false);
     syncScrollLock();
     if (returnFocus && burger) burger.focus();
   }
@@ -68,6 +75,7 @@
       const first = panel.querySelector("a, button");
       if (first) first.focus();
     }
+    setPageInert(true);
     syncScrollLock();
   }
 
@@ -291,7 +299,11 @@
         error.textContent = message;
         error.hidden = !message;
       }
-      if (field) field.setAttribute("aria-invalid", message ? "true" : "false");
+      if (field) {
+        field.setAttribute("aria-invalid", message ? "true" : "false");
+        if (message && error && error.id) field.setAttribute("aria-describedby", error.id);
+        else field.removeAttribute("aria-describedby");
+      }
     };
     form.addEventListener("submit", (event) => {
       event.preventDefault();
