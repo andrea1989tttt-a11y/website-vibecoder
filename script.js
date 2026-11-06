@@ -177,6 +177,7 @@
     });
     const empty = document.querySelector("[data-empty]");
     if (empty) empty.hidden = document.querySelectorAll(".work:not([hidden])").length !== 0;
+    if (typeof window.__prokoshaMeasureRail === "function") window.__prokoshaMeasureRail();
   }
 
   function applyService(value, note) {
@@ -379,9 +380,126 @@
     });
   }
 
+  function initRibbon() {
+    const ribbon = document.querySelector("[data-hero-ribbon] .hero__ribbon-svg");
+    const hero = document.querySelector(".hero");
+    if (!ribbon || !hero) return;
+    if (reduce) {
+      ribbon.style.transform = "none";
+      return;
+    }
+    let frame = 0;
+    const paint = () => {
+      frame = 0;
+      const rect = hero.getBoundingClientRect();
+      const total = Math.max(rect.height, 1);
+      const progress = Math.min(1, Math.max(0, -rect.top / total));
+      const y = progress * -48;
+      const x = progress * 36;
+      const rot = progress * -4;
+      ribbon.style.transform = "translate3d(" + x + "px, " + y + "px, 0) rotate(" + rot + "deg)";
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(paint);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    paint();
+  }
+
+  function initWorksRail() {
+    const section = document.querySelector("[data-works-rail]");
+    const scrollBox = document.querySelector("[data-works-scroll]");
+    const track = document.querySelector("[data-works-track]");
+    const viewport = document.querySelector("[data-works-viewport]");
+    const hint = document.querySelector("[data-works-hint]");
+    if (!section || !scrollBox || !track || !viewport) return;
+
+    const desktopMq = window.matchMedia("(min-width: 901px)");
+    let maxX = 0;
+    let frame = 0;
+
+    const visibleCards = () => [...track.querySelectorAll(".work")].filter((card) => !card.hidden);
+
+    const measure = () => {
+      if (reduce || !desktopMq.matches) {
+        scrollBox.style.height = "";
+        track.style.transform = "";
+        if (hint) hint.hidden = false;
+        return;
+      }
+      if (hint) hint.hidden = true;
+      const cards = visibleCards();
+      if (!cards.length) {
+        scrollBox.style.height = "";
+        track.style.transform = "";
+        return;
+      }
+      const trackWidth = track.scrollWidth;
+      const viewWidth = viewport.clientWidth;
+      maxX = Math.max(0, trackWidth - viewWidth);
+      const pinHeight = Math.max(window.innerHeight - 76, 480);
+      scrollBox.style.height = maxX > 0 ? (pinHeight + maxX) + "px" : pinHeight + "px";
+      paint();
+    };
+
+    const paint = () => {
+      frame = 0;
+      if (reduce || !desktopMq.matches || maxX <= 0) {
+        track.style.transform = "";
+        return;
+      }
+      const rect = scrollBox.getBoundingClientRect();
+      const pinHeight = Math.max(window.innerHeight - 76, 480);
+      const travel = Math.max(scrollBox.offsetHeight - pinHeight, 1);
+      const scrolled = Math.min(travel, Math.max(0, -rect.top));
+      const progress = scrolled / travel;
+      track.style.transform = "translate3d(" + (-maxX * progress) + "px, 0, 0)";
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(paint);
+    };
+
+    window.__prokoshaMeasureRail = measure;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure);
+    if (typeof desktopMq.addEventListener === "function") desktopMq.addEventListener("change", measure);
+    else if (typeof desktopMq.addListener === "function") desktopMq.addListener(measure);
+    measure();
+    window.setTimeout(measure, 120);
+  }
+
+  function initStory() {
+    const section = document.querySelector("[data-story]");
+    const panels = [...document.querySelectorAll("[data-story-panel]")];
+    if (!section || !panels.length) return;
+    if (reduce || !("IntersectionObserver" in window)) {
+      panels.forEach((panel) => panel.classList.add("is-active"));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add("is-active");
+      });
+    }, { threshold: 0.45, rootMargin: "0px 0px -12% 0px" });
+    panels.forEach((panel) => observer.observe(panel));
+  }
+
+  function initMarquee() {
+    const root = document.querySelector("[data-marquee]");
+    if (!root) return;
+    if (reduce) root.setAttribute("data-static", "true");
+  }
+
   window.addEventListener("scroll", updateHeader, { passive: true });
   updateHeader();
   initForm();
   initReveal();
   initParallax();
+  initRibbon();
+  initWorksRail();
+  initStory();
+  initMarquee();
 })();
